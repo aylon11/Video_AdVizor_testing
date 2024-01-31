@@ -6,7 +6,7 @@ PROJECT_ID=$(gcloud config get-value project 2> /dev/null)
 PROJECT_NAME=$(gcloud projects describe $PROJECT_ID --format="value(name)")
 PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID | grep projectNumber | sed "s/.* '//;s/'//g")
 SERVICE_ACCOUNT=$PROJECT_NUMBER-compute@developer.gserviceaccount.com
-IMAGE_NAME="video_advizor_processor"
+IMAGE_NAME="advizor-proccesor"
 TAG="latest"
 
 
