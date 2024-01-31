@@ -21,6 +21,7 @@ enable_apis() {
     pubsub.googleapis.com \
     eventarc.googleapis.com \
     bigquery.googleapis.com \
+    cloudresourcemanager.googleapis.com \
     compute.googleapis.com
 }
 

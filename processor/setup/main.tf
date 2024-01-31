@@ -18,7 +18,7 @@ variable "location" {
 }
 variable "job_name" {
   type    = string
-  default = "advizor_proccesor"
+  default = "advizor-proccesor"
 }
 variable "dataset_id" {
   type = string
