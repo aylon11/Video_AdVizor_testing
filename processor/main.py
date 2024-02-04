@@ -1,12 +1,17 @@
 from utils.storage import BucketHandler
 from utils.bq import BigQueryTableInteractor
 from utils.video_intelligence import VideoObjectDetection
+import logging
 
 _BUCKET_NAME = 'videos_export'
 _DATASET = 'video_data'
 _TABLE = 'video_annotations'
 _VIDEO_METADATA_FILE = 'videos.csv'
 _LENGTH_MS_CAP = 250000
+
+logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s:%(levelname)s:%(message)s')
+
 
 def get_video_id_lists(bq_interactor, videos_df ):
     """
@@ -66,9 +71,14 @@ def main():
 
     # List and sort videos
     videos_df = bucket.read_csv(_VIDEO_METADATA_FILE)
-    exist_list, not_exist_list = get_video_id_lists(bq_interactor, videos_df)
+    logging.info("Videos metadata file read")
 
-    columns_to_select = ['Video ID', 'Video Title (Original)', 'Approx Duration (ms)']
+    exist_list, not_exist_list = get_video_id_lists(bq_interactor, videos_df)
+    logging.info(
+        f"Got exisiting and non-existing video lists. Existing length: {str(len(exist_list))}  Non-exising length: {str(len(exist_list))}")
+    
+    columns_to_select = ['Video ID',
+                         'Video Title (Original)', 'Approx Duration (ms)']
     videos_to_process_df = videos_df[videos_df['Video ID'].isin(not_exist_list)][columns_to_select]
 
     # Process videos
@@ -79,19 +89,22 @@ def main():
             try:
                 process_and_store_video_annotations(bq_interactor, row._1, row._2 + '.mp4')
                 videos_processed.append(row._1)
+                logging.info(f"Processed video with ID {row._1} and name {row._2}")
             except Exception as e:
-                print(e)
                 videos_skipped.append(row._1)
+                logging.error(f"Failed to process video with ID {row._1} and name {row._2} due to error {str(e)}")
         else:
             videos_skipped.append(row._1)
+            logging.error(f"Did not process video with ID {row._1} and name {row._2} due to length")
 
 
-    print(f'Videos Processed: {str(videos_processed)}')
-    print(f'Videos Already Existed: {str(exist_list)}')
-    print(f'Videos Skipped: {str(videos_skipped)}')
+    logging.info(f'Videos Processed: {str(videos_processed)}')
+    logging.info(f'Videos Already Existed: {str(exist_list)}')
+    logging.info(f'Videos Skipped: {str(videos_skipped)}')
 
     # Clean Bucket
-    bucket.delete_all_blobs()
+    logging.info('Cleaning Bucket..')
+    # bucket.delete_all_blobs()
 
 if __name__ == "__main__":
     main()
