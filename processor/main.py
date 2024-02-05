@@ -75,7 +75,7 @@ def main():
 
     exist_list, not_exist_list = get_video_id_lists(bq_interactor, videos_df)
     logging.info(
-        f"Got exisiting and non-existing video lists. Existing length: {str(len(exist_list))}  Non-exising length: {str(len(exist_list))}")
+        f"Got exisiting and non-existing video lists. Existing length: {str(len(exist_list))}  Non-exising length: {str(len(not_exist_list))}")
     
     columns_to_select = ['Video ID',
                          'Video Title (Original)', 'Approx Duration (ms)']

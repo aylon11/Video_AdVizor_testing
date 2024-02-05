@@ -98,10 +98,6 @@ resource "google_project_iam_member" "pubsub_service_account_token_creator" {
 # Cloud Run
 #############################################
 
-data "google_container_registry_image" "video_advizor_processor_image" {
-  name = "gcr.io/${var.project_id}/${var.job_name}:latest"
-}
-
 resource "google_cloud_run_v2_job" "video_advizor_job" {
   name     = "${var.job_name}-job"
   location = var.region
@@ -109,6 +105,12 @@ resource "google_cloud_run_v2_job" "video_advizor_job" {
     template {
       containers {
         image = data.google_container_registry_image.video_advizor_processor_image.name
+        resources {
+          limits = {
+            cpu    = "2"
+            memory = "2048Mi"
+          }
+        }
         env {
           name = "PROJECT_NAME"
           value = var.project_id
@@ -118,6 +120,8 @@ resource "google_cloud_run_v2_job" "video_advizor_job" {
           value = var.project_number
         }
       }
+      timeout = "43200s"
+      max_retries = 1
     }
   }
 }

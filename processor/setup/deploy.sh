@@ -22,6 +22,7 @@ enable_apis() {
     eventarc.googleapis.com \
     bigquery.googleapis.com \
     cloudresourcemanager.googleapis.com \
+    videointelligence.googleapis.com \
     compute.googleapis.com
 }
 
