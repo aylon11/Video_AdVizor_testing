@@ -38,9 +38,14 @@ variable "annotations_table_id" {
 locals {
   service_account = "${var.project_number}-compute@developer.gserviceaccount.com"
 }
+
 provider "google" {
   project = var.project_id
   region  = var.region
+}
+
+data "google_container_registry_image" "annotator_image" {
+  name = "gcr.io/${var.project_id}/${var.annotator_job_name}:latest"
 }
 
 #############################################
@@ -111,7 +116,7 @@ resource "google_cloud_run_v2_job" "video_advizor_job" {
   template {
     template {
       containers {
-        image = var.annotator_job_name
+        image = data.google_container_registry_image.annotator_image.name
         resources {
           limits = {
             cpu    = "2"
@@ -135,7 +140,7 @@ resource "google_cloud_run_v2_job" "video_advizor_job" {
 
 ## Scheduler Trigger
 
-resource "google_cloud_scheduler_job" "proccesor_scheduler" {
+resource "google_cloud_scheduler_job" "annotator_scheduler" {
   name             = "${var.annotator_job_name}-scheduler"
   schedule         = "30 1 * * *"
   attempt_deadline = "320s"
@@ -148,10 +153,10 @@ resource "google_cloud_scheduler_job" "proccesor_scheduler" {
 
   http_target {
     http_method = "POST"
-    uri         = "https://${var.region}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${var.project_number}/jobs/${var.job_name}-job:run"
+    uri         = "https://${var.region}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${var.project_number}/jobs/${var.annotator_job_name}-job:run"
 
     oauth_token {
-      service_account_email = local.service_accoun
+      service_account_email = local.service_account
     }
   }
 
