@@ -32,7 +32,7 @@ create_image() {
     echo "Enabling container deployment..."
     gcloud auth configure-docker
     echo -e "${COLOR}Creating Image...${NC}"
-    docker build -t $1 -f $2/Dockerfile ../
+    docker build -t $1 -f $2/Dockerfile $2/
     docker tag $1 gcr.io/${PROJECT_ID}/$1:${TAG}
     docker push gcr.io/${PROJECT_ID}/$1:${TAG}
     echo "Image pushed to GCP Container Registry successfully."
