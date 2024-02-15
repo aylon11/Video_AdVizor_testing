@@ -17,7 +17,7 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 COPY . ./
 
-RUN pip3 install -r requirements.txt
+RUN pip3 install --require-hashes -r requirements.txt
 
 # Command to run on container start
 ENTRYPOINT ["python3", "main.py"]

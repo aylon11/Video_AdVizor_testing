@@ -104,7 +104,7 @@ def main():
 
     # Clean Bucket
     logging.info('Cleaning Bucket..')
-    # bucket.delete_all_blobs()
+    bucket.delete_all_blobs()
 
 if __name__ == "__main__":
     main()

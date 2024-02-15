@@ -125,3 +125,28 @@ resource "google_cloud_run_v2_job" "video_advizor_job" {
     }
   }
 }
+
+## Scheduler Trigger
+
+resource "google_cloud_scheduler_job" "proccesor_scheduler" {
+  name             = "${var.job_name}-scheduler"
+  schedule         = "30 1 * * *"
+  attempt_deadline = "320s"
+  region           = "us-central1"
+  project          = var.project_id
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = "https://${var.region}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${var.project_number}/jobs/${var.job_name}-job:run"
+
+    oauth_token {
+      service_account_email = local.service_accoun
+    }
+  }
+
+  depends_on = [google_cloud_run_v2_job.video_advizor_job]
+}
