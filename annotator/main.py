@@ -65,6 +65,9 @@ def process_and_store_video_annotations(bq_interactor, video_id, video_name):
 
 
 def main():
+    from utils.dummy import yalla_printer
+    yalla_printer()
+    return 1
     # Init handlers
     bucket = BucketHandler(_BUCKET_NAME)
     bq_interactor = BigQueryTableInteractor(_DATASET, _TABLE)

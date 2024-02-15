@@ -5,29 +5,36 @@
 variable "project_id" {
   type = string
 }
+
 variable "project_number" {
   type = string
 }
+
 variable "region" {
   type    = string
   default = "us-central1"
 }
+
 variable "location" {
   type    = string
   default = "US"
 }
-variable "job_name" {
+
+variable "annotator_job_name" {
   type    = string
-  default = "advizor-proccesor"
+  default = "advizor-annotator"
 }
+
 variable "dataset_id" {
   type = string
   default = "video_data"
 }
+
 variable "annotations_table_id" {
   type = string
   default = "video_annotations"
 }
+
 locals {
   service_account = "${var.project_number}-compute@developer.gserviceaccount.com"
 }
@@ -99,12 +106,12 @@ resource "google_project_iam_member" "pubsub_service_account_token_creator" {
 #############################################
 
 resource "google_cloud_run_v2_job" "video_advizor_job" {
-  name     = "${var.job_name}-job"
+  name     = "${var.annotator_job_name}-job"
   location = var.region
   template {
     template {
       containers {
-        image = data.google_container_registry_image.video_advizor_processor_image.name
+        image = var.annotator_job_name
         resources {
           limits = {
             cpu    = "2"
@@ -129,7 +136,7 @@ resource "google_cloud_run_v2_job" "video_advizor_job" {
 ## Scheduler Trigger
 
 resource "google_cloud_scheduler_job" "proccesor_scheduler" {
-  name             = "${var.job_name}-scheduler"
+  name             = "${var.annotator_job_name}-scheduler"
   schedule         = "30 1 * * *"
   attempt_deadline = "320s"
   region           = "us-central1"
