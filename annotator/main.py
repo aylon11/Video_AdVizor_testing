@@ -65,11 +65,6 @@ def process_and_store_video_annotations(bq_interactor, video_id, video_name):
 
 
 def main():
-    print('111111 111111 111111 11111')
-    print('111111 111111 111111 11111')
-    print('111111 111111 111111 11111')
-    print('111111 111111 111111 11111')
-    return 1
     # Init handlers
     bucket = BucketHandler(_BUCKET_NAME)
     bq_interactor = BigQueryTableInteractor(_DATASET, _TABLE)
